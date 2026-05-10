@@ -29,22 +29,13 @@ jobs:
 
       - name: Install Fira fonts
         run: |
-          sudo apt-get update -qq
-          sudo apt-get install -y fonts-firacode
-          # Install Fira Sans and Fira Math from Google Fonts / Mozilla
           mkdir -p ~/.local/share/fonts
-          # Fira Sans
           curl -sL "https://github.com/mozilla/Fira/archive/refs/heads/master.tar.gz" | \
-            tar xz -C /tmp --wildcards "*/ttf/FiraSans*.ttf"
-          find /tmp/Fira-master/ttf -name "FiraSans*.ttf" -exec cp {} ~/.local/share/fonts/ \;
-          # Fira Mono
-          find /tmp/Fira-master/ttf -name "FiraMono*.ttf" -exec cp {} ~/.local/share/fonts/ \;
-          # Fira Math
+            tar xz -C /tmp --wildcards "*/ttf/FiraSans*.ttf" "*/ttf/FiraMono*.ttf"
+          find /tmp/Fira-master/ttf -name "Fira*.ttf" -exec cp {} ~/.local/share/fonts/ \;
           curl -sLo ~/.local/share/fonts/FiraMath-Regular.otf \
             "https://github.com/firamath/firamath/releases/download/v0.3.4/FiraMath-Regular.otf"
           fc-cache -f
-          echo "Installed fonts:"
-          fc-list | grep -i fira
 
       - name: Install TeX Live
         uses: teatimeguest/setup-texlive-action@v3
@@ -57,15 +48,24 @@ jobs:
             biber
             booktabs
             caption
+            carlisle
+            catchfile
+            chinese-jfm
             ctex
             fandol
             fontspec
             latexmk
+            lm
+            oberdiek
             pgf
             realscripts
+            tools
             unicode-math
+            xcolor
             xecjk
             xetex
+            xstring
+            zhnumber
             collection-fontsrecommended
 
       - name: Compile Beamer presentation
@@ -74,9 +74,7 @@ jobs:
 
       - name: Show log on failure
         if: failure()
-        run: |
-          echo "=== main.log ==="
-          cat main.log || true
+        run: cat main.log || true
 
       - name: Upload PDF
         if: success()
