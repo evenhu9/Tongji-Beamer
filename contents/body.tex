@@ -1,177 +1,277 @@
 %% body.tex
-%% Copyright 2023 TJ-CSCCG
-%
-% This work may be distributed and/or modified under the
-% conditions of the LaTeX Project Public License, either version 1.3
-% of this license or (at your option) any later version.
-% The latest version of this license is in
-%   http://www.latex-project.org/lppl.txt
-% and version 1.3 or later is part of all distributions of LaTeX
-% version 2003/12/01 or later.
-%
-% This work has the LPPL maintenance status "maintained".
-%
-% This Current Maintainer of this work is Rizhong Lin.
-%
-% This work consists of all the *.tex and *.sty files in
-%   https://github.com/TJ-CSCCG/Tongji-Beamer
-\section{系统分析}
-    % “图片文字并排” 示例
-    \begin{frame}{内卷行为归因系统}
-        \begin{columns}
-            \column{.3\textwidth}
-            \begin{figure}
-                \centering \includegraphics[width=.95\textwidth]{contents/figure/factor-analyzer.png}
-                \caption{归因系统架构}
-                \label{fig:factor-analyzer}
-            \end{figure}
+\section{系统设计}
 
-            \column{.6\textwidth}
-            \begin{itemize}
-                \item 校内监控系统：接入校内系统，使用过往录像作为归因系统模型训练数据集。
-                \item 特征提取器：项目提出了数十种内卷特征类型。提取器要求人工为部分数据集标记标签。
-                \item 内卷归因器：阅读历史文献，得出数十种内卷成因，构建内卷特征到成因的映射函数。
-                \item 报告持续生成器：开发该系统的报告生成器，提升用户体验。
-            \end{itemize}
-        \end{columns}
-    \end{frame}
-
-    % “图片文字垂直” 示例
-    \begin{frame}{内卷识别器}
+\begin{frame}{系统总体架构}
+    \footnotesize
+    \begin{columns}
+        \column{.40\textwidth}
         \begin{figure}
             \centering
-            \includegraphics[width=.25\textwidth]{contents/figure/data-detector.png}
-            \caption{识别器架构}
-            \label{fig:data-detector}
+            \includegraphics[width=\columnwidth,height=0.55\textheight,keepaspectratio]{contents/figure/arch.png}
+            \caption{AutoPT+ 四层架构图}
         \end{figure}
 
+        \column{.46\textwidth}
+        \begin{block}{分层设计}
+            \begin{itemize}
+                \item \textbf{表示层}：Web Console（Flask + HTML）
+                \item \textbf{业务逻辑层}：RESTful 接口、Docker 容器管理
+                \item \textbf{核心引擎层}：LangGraph 状态机、Agent、VulnSelect / Check
+                \item \textbf{基础设施层}：nmap · xray · Playwright · Docker Engine
+            \end{itemize}
+        \end{block}
+    \end{columns}
+\end{frame}
+
+\section{改进一：PSM 流程控制}
+
+\begin{frame}{提示词结构化与角色差异化}
+    \footnotesize
+    \begin{block}{统一 ReAct 基线模板}
+        三个 Agent 共用 \_REACT\_HEADER / \_REACT\_FOOTER 骨架，FORMAT RULES 模块禁止 \texttt{<thinking>} 标签，将 Thought 限定为单句。
+    \end{block}
+
+    \begin{block}{三个 Agent 的角色边界}
         \begin{itemize}
-            \item \small 复用归因系统中图像处理的特定阶段，编写软硬件接口，对接校内监控系统终端。
-            \item \small 识别器特征提取结果将上传至我校私有云上，方便监管与处理。
+            \item \textbf{Scan Agent}（SCAN ONLY, NO EXPLOITATION）：强制 nmap $\to$ xray $\to$ 结果的有序流程
+            \item \textbf{Inquire Agent}（ONLY ReadHTML）：禁止执行命令，输出结构化多步 PoC（STEP N: 格式）
+            \item \textbf{Exploit Agent}：明确 SUCCESS CRITERIA（/etc/passwd、uid=、phpinfo()），最多 8 次尝试
         \end{itemize}
-    \end{frame}
+    \end{block}
+\end{frame}
 
-    % “多图片文字混合” 示例
-    \begin{frame}{内卷信息收集与行为防范系统}
-        \begin{columns}
-            \column{.3\textwidth}
-            \begin{figure}
-                \centering
-                \includegraphics[width=\textwidth]{contents/figure/data-detector.png}
-                \caption{识别器架构}
-                \label{fig:data-detector-2}
-            \end{figure}
-
-            \column{.2\textwidth}
-            \begin{figure}
-                \centering
-                \includegraphics[width=\textwidth]{contents/figure/collector-part-1.png}
-                \caption{信息收集系统}
-                \label{fig:collector-part-1}
-            \end{figure}
-
-            \column{.25\textwidth}
-            \begin{figure}
-                \centering
-                 \includegraphics[width=\textwidth]{contents/figure/collector-part-2.png}
-                \caption{行为防范系统}
-                \label{fig:collector-part-2}
-            \end{figure}
-        \end{columns}
-
-        \small 信息收集系统使用一个服务作为所有监控终端设备的“注册中心”，提供鉴权、心跳检查等能力；行为规范系统复用了归因系统中的特定因素分析阶段，以此作为决策树的判断基础。
-    \end{frame}
-
-
-\section{合理性分析}
-    % “数学” 与 “公式” 示例
-    \begin{frame}{专有名词释义}
-        \begin{definition}[永夜势力]
-            考虑一所高校，其中永夜村民的数量除以学生总数的值。
-        \end{definition}
-        \begin{theorem}[永夜定理]
-            考虑一所高校，在不存在干涉的情况下，永夜势力在小于 1 前，恒呈指数型增长。
-        \end{theorem}
-        \begin{theorem}[永夜方程]
-            考虑一所高校，人为干涉无效的概率为$x$。$x$是方程~\ref{eqn:x}~的解，其中$n$为全校学生总数。
-        \begin{equation}\label{eqn:x}
-            \begin{vmatrix}
-            \begin{bmatrix}
-                    x & \Phi(\pi) \\
-                    \sum_{i = 1}^n x_i & \exp(x_i)
-            \end{bmatrix}
-            \begin{bmatrix}
-                    1 & \cdots & n \\
-                    x\Phi(e) & \cdots & x\Phi^n(e^n)
-            \end{bmatrix}
-            \end{vmatrix} = \dfrac{\pi}{x}
-        \end{equation}
-        \end{theorem}
-    \end{frame}
-
-    % “简单公式” 示例
-    \begin{frame}{负载分析}
-        系统在设计时进行了计算下沉，分离图像处理的多个步骤，实现计算的高效性。
-
-        假设 $id \in [1850001, 1859999]$，识别器与分析器共有 $m$ 个机器，第 $i$ 个机器负责 $\left[1850001 + i \times \frac{9999}{m}, 1859999 + (i + 1) \times \frac{9999}{100}\right]$ 个单位。
-
-        识别层机器会发送分析层机器需要的特定记录到存储中。存储中每个节点大小为 16~KB，由于一条记录占据 400~B 的空间，有：
-        \begin{equation}
-            Node = \dfrac{16 \times 1024\operatorname{B}}{400 \operatorname{B}} \approx 16
-        \end{equation}
-
-        假设 $t$ 为一次操作所花费的时间，设单表大小为 $M$。在不进行计算分离时，消耗的时间 $T = Mt$。但在分离过后，全过程时间为：
-        \begin{equation}
-            T' = \dfrac{M}{m} + \dfrac{9999}{m} \cdot t < Mt, \quad \text{if } m > \dfrac{1}{t} + \dfrac{9999}{M}
-        \end{equation}
-    \end{frame}
-
-
-\section{组件设计}
-    % “表格” 示例
-    \begin{frame}{决策系统设计}
-        \begin{table}[]
+\begin{frame}{Scan 阶段细化与提前终止机制}
+    \footnotesize
+    \begin{columns}
+        \column{.48\textwidth}
+        \begin{figure}
             \centering
-            \begin{tabular}{@{}ccc@{}}
+            \includegraphics[width=\columnwidth,height=0.55\textheight,keepaspectratio]{contents/figure/scan.png}
+            \caption{动态端口发现流程}
+        \end{figure}
+
+        \column{.48\textwidth}
+        \begin{block}{四个子阶段}
+            \begin{enumerate}
+                \item \textbf{端口发现}：nmap -p- 全端口 + -sV -sC 服务识别
+                \item \textbf{服务知识匹配}：services.yml 注入 CVE 特征与攻击线索
+                \item \textbf{漏洞扫描}：xray 对所有 HTTP 端口逐一扫描
+                \item \textbf{结果评估}：parse\_vuln 解析，为空则写 scan\_failed 标志直接终止
+            \end{enumerate}
+        \end{block}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{上下文压缩与 Check 双层验证}
+    \footnotesize
+    \begin{columns}
+        \column{.48\textwidth}
+        \begin{block}{上下文压缩机制}
+            \begin{itemize}
+                \item \textbf{即时摘要}：关键 token 过滤（漏洞标识、服务指纹、错误信息），截断至 2000 字符
+                \item \textbf{三层结构化组装}：Final Goal + 漏洞选择 + Scan 摘要
+                \item \textbf{容错 PoC 提取}：Final Answer $\to$ agent\_log $\to$ ReadHTML 原始返回 $\to$ 日志回溯
+            \end{itemize}
+        \end{block}
+
+        \column{.48\textwidth}
+        \begin{figure}
+            \centering
+            \includegraphics[width=\columnwidth,height=0.55\textheight,keepaspectratio]{contents/figure/psm.png}
+            \caption{条件驱动的状态转移模型}
+        \end{figure}
+    \end{columns}
+\end{frame}
+
+\section{改进二：工具扩展与容错}
+
+\begin{frame}{浏览器扩展工具与 RobustReActParser}
+    \footnotesize
+    \begin{columns}
+        \column{.48\textwidth}
+        \begin{block}{三个浏览器扩展工具}
+            \begin{itemize}
+                \item \texttt{fill\_element}：定位 input/textarea，清空后填入文本（安装向导、登录表单）
+                \item \texttt{select\_option}：定位下拉框，按 value 或文本标签选择
+                \item \texttt{wait\_for\_selector}：等待元素出现并可见，支持自定义超时
+            \end{itemize}
+        \end{block}
+
+        \column{.48\textwidth}
+        \begin{block}{RobustReActParser 多级容错}
+            原版：格式偏差 $\to$ 直接抛异常终止循环 \\[0.5em]
+            改进版通过降级策略（清洗思维链标签 $\to$ 标准解析 $\to$ 宽松正则 $\to$ Action 提取 $\to$ 模糊匹配 $\to$ 格式引导）将解析失败转为可恢复的中间状态。
+        \end{block}
+    \end{columns}
+\end{frame}
+
+\section{改进三：Web Console}
+
+\begin{frame}{Web Console 图形化管理界面}
+    \footnotesize
+    \begin{columns}
+        \column{.50\textwidth}
+        \begin{block}{六个功能模块}
+            \begin{itemize}
+                \item \textbf{控制台}：系统状态总览、OWASP 分类统计
+                \item \textbf{漏洞库}：20 个 CVE 展示，搜索/难度筛选
+                \item \textbf{渗透测试面板}：一键发起，实时日志（1.5s 轮询）
+                \item \textbf{靶机管理}：Docker 容器启/停/销毁监控
+                \item \textbf{测试报告}：历史记录、成本/Token 多维分析
+                \item \textbf{系统设置}：API Key、模型参数配置
+            \end{itemize}
+        \end{block}
+
+        \column{.46\textwidth}
+        \begin{figure}
+            \centering
+            \includegraphics[width=\columnwidth,height=0.55\textheight,keepaspectratio]{contents/figure/browser.png}
+            \caption{浏览器工具层架构}
+        \end{figure}
+    \end{columns}
+\end{frame}
+
+\section{实验与评估}
+
+\begin{frame}{实验设置}
+    \footnotesize
+    \begin{block}{数据集}
+        \begin{itemize}
+            \item 20 个真实 CVE 漏洞（10 简单 + 10 复杂），涵盖 OWASP Top 10 全部类别
+            \item 简单漏洞：1\textasciitilde2 个 HTTP 请求即可打通；复杂漏洞：需先走完安装向导，再对特定模块利用
+        \end{itemize}
+    \end{block}
+    \begin{block}{模型与参数}
+        \begin{itemize}
+            \item 三个 LLM：GPT-4o、GPT-4o-mini、GPT-3.5-turbo，温度参数均固定为 0
+            \item Scan Agent 最多 5 轮迭代，Inquire 3 轮，Exploit 12 轮，PSM 总递归深度上限 30 步
+        \end{itemize}
+    \end{block}
+    \begin{block}{实验流程}
+        \begin{itemize}
+            \item 每漏洞每模型跑 5 次，共 \textbf{300 次}独立实验
+            \item 每次实验后销毁重建 Docker 靶机，清空 Agent 上下文
+            \item 原版 AutoPT 数据直接取自原论文\cite{Wu2024AutoPT}公开结果
+        \end{itemize}
+    \end{block}
+\end{frame}
+
+\begin{frame}{RQ1：总体成功率大幅提升}
+    \footnotesize
+    \begin{columns}
+        \column{.46\textwidth}
+        \begin{exampleblock}{核心结论}
+            \begin{itemize}
+                \item 总体：$\sim$25\% $\to$ \textbf{63.67\%（+39pp）}
+                \item 简单漏洞均值：$\sim$32\% $\to$ \textbf{76.67\%}
+                \item 复杂漏洞均值：$\sim$17\% $\to$ \textbf{50.67\%}
+                \item 原版 60 组中 38 组通过率为 0\%，改进版降至仅 \textbf{3 组}
+            \end{itemize}
+        \end{exampleblock}
+        \begin{block}{主要原因}
+            nmap 全端口扫描扩大攻击面；角色隔离提示词减少越权操作
+        \end{block}
+
+        \column{.50\textwidth}
+        \begin{table}
+            \centering
+            \scriptsize
+            \begin{tabular}{@{}lccc@{}}
                 \toprule
-                \textbf{运行时间} & \textbf{实验组} & \textbf{对照组（单位 1）} \\ \midrule
-                设计模式使用 --- 不使用 & 1.1 & 1 \\
-                Julia --- Python & 0.7 & 1 \\
-                负载均衡集群 --- 单机 & 0.5 & 1 \\
-                集群分布式缓存 --- 无缓存 & 0.8 & 1 \\ \bottomrule
+                \textbf{维度} & \textbf{原版} & \textbf{AutoPT+} & \textbf{变化} \\ \midrule
+                简单（GPT-4o）     & 26\% & 76\%  & +50pp \\
+                简单（GPT-4o-mini）& 56\% & 90\%  & +34pp \\
+                简单（GPT-3.5）    & 14\% & 64\%  & +50pp \\
+                复杂（GPT-4o）     & 26\% & 50\%  & +24pp \\
+                复杂（GPT-4o-mini）& 18\% & 58\%  & +40pp \\
+                复杂（GPT-3.5）    &  8\% & 44\%  & +36pp \\
+                \textbf{总体}      & $\sim$25\% & \textbf{63.67\%} & \textbf{+39pp} \\ \bottomrule
             \end{tabular}
-            \caption{各技术对决策系统的影响}
-            \label{tab:tech-strategy}
+            \caption{各维度成功率对比}
         \end{table}
-        
-        \vspace{-1em}  % use vspace and hspace to adjust space
-        
-        \begin{columns}
-            \small
-            \column{.5\textwidth}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{RQ2：模型差异分析}
+    \footnotesize
+    \begin{block}{三模型成功率排名}
+        \begin{itemize}
+            \item \textbf{GPT-4o-mini：74\%}（简单 90\%，复杂 58\%）——综合最优，ReAct 格式遵循最稳定
+            \item GPT-4o：63\%（简单 76\%，复杂 50\%）——偏保守，提前放弃比例最高（40.54\%）
+            \item GPT-3.5-turbo：54\%（简单 64\%，复杂 44\%）
+        \end{itemize}
+    \end{block}
+    \begin{alertblock}{架构对弱模型的"兜底"效应}
+        GPT-3.5 原版总体 $\sim$7\%，改进版跃升至 \textbf{54\%}，增幅最大。合理的流程约束和提示词设计可以在相当程度上补偿模型本身能力的不足。
+    \end{alertblock}
+    \begin{exampleblock}{有趣的现象}
+        GPT-4o-mini 表现优于参数规模更大的 GPT-4o——与 AutoPT 原论文观察一致
+    \end{exampleblock}
+\end{frame}
+
+\begin{frame}{RQ3：成本效益分析}
+    \footnotesize
+    \begin{columns}
+        \column{.52\textwidth}
+        \begin{table}
+            \centering
+            \scriptsize
+            \begin{tabular}{@{}lccc@{}}
+                \toprule
+                \textbf{指标} & \textbf{原版} & \textbf{AutoPT+} & \textbf{人工} \\ \midrule
+                总成本        & \$0.99 & \textbf{\$0.31} & $\sim$\$310 \\
+                单次成本      & \$0.0099 & \textbf{\$0.003109} & — \\
+                平均耗时/次   & 161.3s & \textbf{94.2s} & $\sim$15min \\
+                总体成功率    & 36\%   & \textbf{74\%} & — \\ \bottomrule
+            \end{tabular}
+            \caption{成本效益对比（GPT-4o-mini，20 漏洞 $\times$ 5 次）}
+        \end{table}
+
+        \column{.44\textwidth}
+        \begin{exampleblock}{结论}
             \begin{itemize}
-                \item 使用 Strategy 设计模式。
-                \item 使用 Julia 高效计算矩阵乘法。
-                \item 对归因系统暴露幂等性 API，使用计算集群增强计算能力。
+                \item 费用降低 \textbf{69\%}
+                \item 耗时缩短 \textbf{42\%}
+                \item 成功率提升 \textbf{38pp}
             \end{itemize}
+        \end{exampleblock}
+        \begin{block}{原因}
+            提前终止省去无效执行；上下文压缩减少 Token 用量
+        \end{block}
+    \end{columns}
+\end{frame}
 
-            \column{.5\textwidth}
+
+\begin{frame}{失败原因分析}
+    \footnotesize
+    \begin{columns}
+        \column{.52\textwidth}
+        \begin{table}
+            \centering
+            \scriptsize
+            \begin{tabular}{@{}lcccc@{}}
+                \toprule
+                \textbf{失败原因} & \textbf{总体} & \textbf{3.5} & \textbf{4o} & \textbf{4o-mini} \\ \midrule
+                提前放弃         & 33.0\%  & 32.6\% & 40.5\% & 23.1\% \\
+                错误的命令       & 29.4\%  & 28.3\% & 32.4\% & 26.9\% \\
+                上下文限制       & 22.9\%  & 19.6\% & 24.3\% & 26.9\% \\
+                安全审查拦截     & 22.0\%  & 19.6\% & 18.9\% & \textbf{30.8\%} \\
+                \textbf{工具执行失败} & \textbf{10.1\%} & 13.0\% & 8.1\% & 7.7\% \\ \bottomrule
+            \end{tabular}
+            \caption{109 次失败的原因分布}
+        \end{table}
+
+        \column{.44\textwidth}
+        \begin{exampleblock}{工具层改进的验证}
+            \textbf{工具执行失败仅 10.1\%}（最低），三处改动叠加：
             \begin{itemize}
-                \item 采用负载均衡，平衡集群中各处理机的负载。
-                \item 采用分布式缓存技术，加快集群整体对高频特殊输入的反应。
+                \item 浏览器扩展工具补足表单交互
+                \item RobustReActParser 多级容错降级
+                \item RULES 模块明确工具选择判据
             \end{itemize}
-        \end{columns}
-    \end{frame}
-
-    % “引用” 示例
-    \begin{frame}{通知系统设计}
-        著名哲人 skyleaworlder 有言：“内卷是可以被扼杀在摇篮中的。"\cite{involution} 只要在检测到疑似内卷行为后做到及时响应，由专业技术人员发起干涉，就有很相当概率阻止永夜势力的扩张。
-
-        通知系统需要具备以下几个方面特性：
-        \begin{enumerate}
-            \item 即时性。内卷极易滋生壮大，通知专业技术人员的时间应该尽可能短。
-            \item 高可用性。内卷行为来势汹汹，需要保证通知系统推送功能在高并发环境下的高可用性。
-        \end{enumerate}
-
-        自然卷说过：“内卷是凡人在挣扎中写下的血与泪的史诗。"\cite{undergrads_inv} 这份 “扭曲的美” 不应存于世间。
-    \end{frame}
+        \end{exampleblock}
+        \begin{alertblock}{主要瓶颈}
+            提前放弃（33\%）和安全审查拦截（22\%）尚待解决
+        \end{alertblock}
+    \end{columns}
+\end{frame}
