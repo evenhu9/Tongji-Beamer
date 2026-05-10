@@ -27,25 +27,24 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Install Fira fonts
-        run: |
-          mkdir -p ~/.local/share/fonts /usr/local/share/fonts
-          curl -sL "https://github.com/mozilla/Fira/archive/refs/heads/master.tar.gz" | \
-            tar xz -C /tmp --wildcards "*/ttf/FiraSans*.ttf" "*/ttf/FiraMono*.ttf"
-          find /tmp/Fira-master/ttf -name "Fira*.ttf" -exec sudo cp {} /usr/local/share/fonts/ \;
-          sudo curl -sLo /usr/local/share/fonts/FiraMath-Regular.otf \
-            "https://github.com/firamath/firamath/releases/download/v0.3.4/FiraMath-Regular.otf"
-          sudo fc-cache -f
-          fc-list | grep -i fira | head -10
-
-      - name: Compile with xu-cheng/latex-action (full TeX Live)
+      - name: Compile with xu-cheng/latex-action
         uses: xu-cheng/latex-action@v3
         with:
           root_file: main.tex
           latexmk_use_xelatex: true
           latexmk_shell_escape: true
           extra_fonts: |
-            /usr/local/share/fonts/FiraMath-Regular.otf
+            ./fonts/FiraSans-Regular.ttf
+            ./fonts/FiraSans-Bold.ttf
+            ./fonts/FiraSans-Italic.ttf
+            ./fonts/FiraSans-BoldItalic.ttf
+            ./fonts/FiraMono-Regular.ttf
+            ./fonts/FiraMono-Bold.ttf
+            ./fonts/FiraMath-Regular.otf
+
+      - name: Show log on failure
+        if: failure()
+        run: cat main.log || true
 
       - name: Upload PDF
         if: success()
