@@ -54,11 +54,15 @@
         \begin{block}{四个子阶段}
             \begin{enumerate}
                 \item \textbf{端口发现}：nmap -p- 全端口 + -sV -sC 服务识别
-                \item \textbf{服务知识匹配}：services.yml 注入 CVE 特征与攻击线索
+                \item \textbf{服务知识匹配}：services.yml 注入 CVE 特征与攻击线索（匹配准确率 85\% 精确 + 15\% 模糊 = 100\%）
                 \item \textbf{漏洞扫描}：xray 对所有 HTTP 端口逐一扫描
-                \item \textbf{结果评估}：parse\_vuln 解析，为空则写 scan\_failed 标志直接终止
+                \item \textbf{结果评估}：parse\_vuln 解析，为空则写 scan\_failed 标志直接终止（try-except 兜底防误判）
             \end{enumerate}
         \end{block}
+        \vspace{0.3em}
+        \begin{exampleblock}{效果}
+            Exploit Agent 工具调用次数从原版平均 7.2 次降至 4.8 次（\textbf{降幅 33\%}）
+        \end{exampleblock}
     \end{columns}
 \end{frame}
 
@@ -70,7 +74,13 @@
             \begin{itemize}
                 \item \textbf{即时摘要}：关键 token 过滤（漏洞标识、服务指纹、错误信息），截断至 2000 字符
                 \item \textbf{三层结构化组装}：Final Goal + 漏洞选择 + Scan 摘要
-                \item \textbf{容错 PoC 提取}：Final Answer $\to$ agent\_log $\to$ ReadHTML 原始返回 $\to$ 日志回溯
+            \end{itemize}
+        \end{block}
+        \begin{block}{PoC 容错提取与 Check 双层验证}
+            \begin{itemize}
+                \item \textbf{PoC 四级容错}：Final Answer $\to$ agent\_log $\to$ ReadHTML 原始返回 $\to$ 日志回溯
+                \item \textbf{匹配域缩小}：仅检查工具原始输出 raw\_outputs，排除模型推理文本
+                \item \textbf{LLM 语义判断优先 + 正则通用匹配兜底} 双层校验
             \end{itemize}
         \end{block}
 
@@ -102,6 +112,9 @@
             原版：格式偏差 $\to$ 直接抛异常终止循环 \\[0.5em]
             改进版通过降级策略（清洗思维链标签 $\to$ 标准解析 $\to$ 宽松正则 $\to$ Action 提取 $\to$ 模糊匹配 $\to$ 格式引导）将解析失败转为可恢复的中间状态。
         \end{block}
+        \begin{block}{ReadHTML PoC 增强提取}
+            匹配 GitHub vulhub 仓库时自动提取 README 中的 PoC 代码块，过滤环境搭建与 Docker 命令，仅返回利用相关命令。
+        \end{block}
     \end{columns}
 \end{frame}
 
@@ -119,6 +132,14 @@
                 \item \textbf{靶机管理}：Docker 容器启/停/销毁监控
                 \item \textbf{测试报告}：历史记录、成本/Token 多维分析
                 \item \textbf{系统设置}：API Key、模型参数配置
+            \end{itemize}
+        \end{block}
+        \begin{block}{技术选型}
+            \begin{itemize}
+                \item \textbf{后端}：Flask RESTful API
+                \item \textbf{前端}：原生 JavaScript SPA（CSS Flexbox/Grid 暗色主题）
+                \item \textbf{实时通信}：HTTP 轮询（1.5s 增量拉取日志）
+                \item \textbf{防护}：DOM 操作使用 textContent 防 XSS
             \end{itemize}
         \end{block}
 
@@ -156,60 +177,52 @@
     \end{block}
 \end{frame}
 
-\begin{frame}{RQ1：总体成功率大幅提升}
+\begin{frame}{RQ1：模型差异分析}
     \footnotesize
     \begin{columns}
-        \column{.46\textwidth}
-        \begin{exampleblock}{核心结论}
+        \column{.52\textwidth}
+        \begin{exampleblock}{总体成功率对比}
             \begin{itemize}
-                \item 总体：$\sim$25\% $\to$ \textbf{63.67\%（+39pp）}
-                \item 简单漏洞均值：$\sim$32\% $\to$ \textbf{76.67\%}
-                \item 复杂漏洞均值：$\sim$17\% $\to$ \textbf{50.67\%}
+                \item 总体：24.67\% $\to$ \textbf{63.67\%（+39pp）}
+                \item 简单均值：32\% $\to$ 76.67\%；复杂均值：17.33\% $\to$ 50.67\%
                 \item 原版 60 组中 38 组通过率为 0\%，改进版降至仅 \textbf{3 组}
             \end{itemize}
         \end{exampleblock}
-        \begin{block}{主要原因}
-            nmap 全端口扫描扩大攻击面；角色隔离提示词减少越权操作
-        \end{block}
-
-        \column{.50\textwidth}
         \begin{table}
             \centering
             \scriptsize
             \begin{tabular}{@{}lccc@{}}
                 \toprule
                 \textbf{维度} & \textbf{原版} & \textbf{AutoPT+} & \textbf{变化} \\ \midrule
-                简单（GPT-4o）     & 26\% & 76\%  & +50pp \\
-                简单（GPT-4o-mini）& 56\% & 90\%  & +34pp \\
-                简单（GPT-3.5）    & 14\% & 64\%  & +50pp \\
-                复杂（GPT-4o）     & 26\% & 50\%  & +24pp \\
-                复杂（GPT-4o-mini）& 18\% & 58\%  & +40pp \\
-                复杂（GPT-3.5）    &  8\% & 44\%  & +36pp \\
-                \textbf{总体}      & $\sim$25\% & \textbf{63.67\%} & \textbf{+39pp} \\ \bottomrule
+                简 GPT-4o     & 26\% & 76\%  & +50pp \\
+                简 4o-mini    & 56\% & 90\%  & +34pp \\
+                简 3.5        & 14\% & 64\%  & +50pp \\
+                复 GPT-4o     & 26\% & 50\%  & +24pp \\
+                复 4o-mini    & 18\% & 58\%  & +40pp \\
+                复 3.5        &  8\% & 44\%  & +36pp \\
+                \textbf{总体} & 24.67\% & \textbf{63.67\%} & \textbf{+39pp} \\ \bottomrule
             \end{tabular}
             \caption{各维度成功率对比}
         \end{table}
+
+        \column{.44\textwidth}
+        \begin{block}{三模型成功率排名}
+            \begin{itemize}
+                \item \textbf{GPT-4o-mini：74\%}（简单 90\%，复杂 58\%）——综合最优
+                \item GPT-4o：63\%（简单 76\%，复杂 50\%）
+                \item GPT-3.5-turbo：54\%（简单 64\%，复杂 44\%）
+            \end{itemize}
+        \end{block}
+        \begin{alertblock}{弱模型"兜底"效应}
+            GPT-3.5 原版 $\sim$7\% $\to$ \textbf{54\%}，增幅最大。合理的流程约束可在相当程度上补偿模型能力的不足。
+        \end{alertblock}
+        \begin{exampleblock}{现象}
+            GPT-4o-mini 优于 GPT-4o，与原论文\cite{Wu2024AutoPT}观察一致
+        \end{exampleblock}
     \end{columns}
 \end{frame}
 
-\begin{frame}{RQ2：模型差异分析}
-    \footnotesize
-    \begin{block}{三模型成功率排名}
-        \begin{itemize}
-            \item \textbf{GPT-4o-mini：74\%}（简单 90\%，复杂 58\%）——综合最优，ReAct 格式遵循最稳定
-            \item GPT-4o：63\%（简单 76\%，复杂 50\%）——偏保守，提前放弃比例最高（40.54\%）
-            \item GPT-3.5-turbo：54\%（简单 64\%，复杂 44\%）
-        \end{itemize}
-    \end{block}
-    \begin{alertblock}{架构对弱模型的"兜底"效应}
-        GPT-3.5 原版总体 $\sim$7\%，改进版跃升至 \textbf{54\%}，增幅最大。合理的流程约束和提示词设计可以在相当程度上补偿模型本身能力的不足。
-    \end{alertblock}
-    \begin{exampleblock}{有趣的现象}
-        GPT-4o-mini 表现优于参数规模更大的 GPT-4o——与 AutoPT 原论文观察一致
-    \end{exampleblock}
-\end{frame}
-
-\begin{frame}{RQ3：成本效益分析}
+\begin{frame}{RQ2：成本效益分析}
     \footnotesize
     \begin{columns}
         \column{.52\textwidth}
@@ -242,10 +255,32 @@
 \end{frame}
 
 
-\begin{frame}{失败原因分析}
+\begin{frame}{RQ3：改进效果评估}
     \footnotesize
     \begin{columns}
         \column{.52\textwidth}
+        \begin{block}{方向一：PSM 流程控制}
+            \begin{itemize}
+                \item 状态转移优化与提前终止减少无效执行
+                \item 提示词结构化减少越权命令与格式错误
+                \item 上下文压缩有效控制 Token 增长
+            \end{itemize}
+        \end{block}
+        \begin{block}{方向二：工具扩展与优化}
+            \begin{itemize}
+                \item 浏览器工具 + 容错解析 + PoC 增强提取
+                \item 工具执行失败仅 \textbf{10.1\%}，各模型表现稳定
+                \item 错误的命令 29.4\%，4o-mini 最低（26.92\%）
+            \end{itemize}
+        \end{block}
+        \begin{block}{方向三：Web Console}
+            \begin{itemize}
+                \item 提高实验过程一致性与结果可复核性
+                \item 保障 300 组实验的基础支撑
+            \end{itemize}
+        \end{block}
+
+        \column{.44\textwidth}
         \begin{table}
             \centering
             \scriptsize
@@ -256,22 +291,13 @@
                 错误的命令       & 29.4\%  & 28.3\% & 32.4\% & 26.9\% \\
                 上下文限制       & 22.9\%  & 19.6\% & 24.3\% & 26.9\% \\
                 安全审查拦截     & 22.0\%  & 19.6\% & 18.9\% & \textbf{30.8\%} \\
-                \textbf{工具执行失败} & \textbf{10.1\%} & 13.0\% & 8.1\% & 7.7\% \\ \bottomrule
+                工具执行失败     & \textbf{10.1\%} & 13.0\% & 8.1\% & 7.7\% \\ \bottomrule
             \end{tabular}
             \caption{109 次失败的原因分布}
         \end{table}
 
-        \column{.44\textwidth}
-        \begin{exampleblock}{工具层改进的验证}
-            \textbf{工具执行失败仅 10.1\%}（最低），三处改动叠加：
-            \begin{itemize}
-                \item 浏览器扩展工具补足表单交互
-                \item RobustReActParser 多级容错降级
-                \item RULES 模块明确工具选择判据
-            \end{itemize}
-        \end{exampleblock}
         \begin{alertblock}{主要瓶颈}
-            提前放弃（33\%）和安全审查拦截（22\%）尚待解决
+            提前放弃（33\%）——重试策略不区分失败类型；安全审查拦截（22\%）——GPT-4o-mini 达 30.77\%
         \end{alertblock}
     \end{columns}
 \end{frame}
