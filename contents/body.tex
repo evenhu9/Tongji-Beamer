@@ -54,15 +54,11 @@
         \begin{block}{四个子阶段}
             \begin{enumerate}
                 \item \textbf{端口发现}：nmap -p- 全端口 + -sV -sC 服务识别
-                \item \textbf{服务知识匹配}：services.yml 注入 CVE 特征与攻击线索（匹配准确率 85\% 精确 + 15\% 模糊 = 100\%）
+                \item \textbf{服务知识匹配}：services.yml 注入 CVE 特征与攻击线索（匹配率 85\% 精确 + 15\% 模糊 = 100\%）
                 \item \textbf{漏洞扫描}：xray 对所有 HTTP 端口逐一扫描
-                \item \textbf{结果评估}：parse\_vuln 解析，为空则写 scan\_failed 标志直接终止（try-except 兜底防误判）
+                \item \textbf{结果评估}：parse\_vuln 解析为空则提前终止（try-except 防误判）；Exploit 调用次数 7.2$\to$4.8（\textbf{-33\%}）
             \end{enumerate}
         \end{block}
-        \vspace{0.3em}
-        \begin{exampleblock}{效果}
-            Exploit Agent 工具调用次数从原版平均 7.2 次降至 4.8 次（\textbf{降幅 33\%}）
-        \end{exampleblock}
     \end{columns}
 \end{frame}
 
@@ -135,12 +131,7 @@
             \end{itemize}
         \end{block}
         \begin{block}{技术选型}
-            \begin{itemize}
-                \item \textbf{后端}：Flask RESTful API
-                \item \textbf{前端}：原生 JavaScript SPA（CSS Flexbox/Grid 暗色主题）
-                \item \textbf{实时通信}：HTTP 轮询（1.5s 增量拉取日志）
-                \item \textbf{防护}：DOM 操作使用 textContent 防 XSS
-            \end{itemize}
+            Flask RESTful · 原生 JavaScript SPA · HTTP 轮询 1.5s · textContent 防 XSS
         \end{block}
 
         \column{.46\textwidth}
@@ -179,47 +170,18 @@
 
 \begin{frame}{RQ1：模型差异分析}
     \footnotesize
-    \begin{columns}
-        \column{.52\textwidth}
-        \begin{exampleblock}{总体成功率对比}
-            \begin{itemize}
-                \item 总体：24.67\% $\to$ \textbf{63.67\%（+39pp）}
-                \item 简单均值：32\% $\to$ 76.67\%；复杂均值：17.33\% $\to$ 50.67\%
-                \item 原版 60 组中 38 组通过率为 0\%，改进版降至仅 \textbf{3 组}
-            \end{itemize}
-        \end{exampleblock}
-        \begin{table}
-            \centering
-            \scriptsize
-            \begin{tabular}{@{}lccc@{}}
-                \toprule
-                \textbf{维度} & \textbf{原版} & \textbf{AutoPT+} & \textbf{变化} \\ \midrule
-                简 GPT-4o     & 26\% & 76\%  & +50pp \\
-                简 4o-mini    & 56\% & 90\%  & +34pp \\
-                简 3.5        & 14\% & 64\%  & +50pp \\
-                复 GPT-4o     & 26\% & 50\%  & +24pp \\
-                复 4o-mini    & 18\% & 58\%  & +40pp \\
-                复 3.5        &  8\% & 44\%  & +36pp \\
-                \textbf{总体} & 24.67\% & \textbf{63.67\%} & \textbf{+39pp} \\ \bottomrule
-            \end{tabular}
-            \caption{各维度成功率对比}
-        \end{table}
-
-        \column{.44\textwidth}
-        \begin{block}{三模型成功率排名}
-            \begin{itemize}
-                \item \textbf{GPT-4o-mini：74\%}（简单 90\%，复杂 58\%）——综合最优
-                \item GPT-4o：63\%（简单 76\%，复杂 50\%）
-                \item GPT-3.5-turbo：54\%（简单 64\%，复杂 44\%）
-            \end{itemize}
-        \end{block}
-        \begin{alertblock}{弱模型"兜底"效应}
-            GPT-3.5 原版 $\sim$7\% $\to$ \textbf{54\%}，增幅最大。合理的流程约束可在相当程度上补偿模型能力的不足。
-        \end{alertblock}
-        \begin{exampleblock}{现象}
-            GPT-4o-mini 优于 GPT-4o，与原论文\cite{Wu2024AutoPT}观察一致
-        \end{exampleblock}
-    \end{columns}
+    \begin{exampleblock}{核心结果}
+        总体 24.67\% $\to$ \textbf{63.67\%（+39pp）} $\;|\;$ 简单 32\% $\to$ 76.67\% $\;|\;$ 复杂 17.33\% $\to$ 50.67\% $\;|\;$ 60 组 0\% $\to$ 仅 \textbf{3 组}
+    \end{exampleblock}
+    \begin{block}{三模型成功率排名}
+        \textbf{GPT-4o-mini：74\%}（简单 90\%，复杂 58\%）$\gg$ GPT-4o：63\%（简单 76\%，复杂 50\%）$\gg$ GPT-3.5-turbo：54\%（简单 64\%，复杂 44\%）
+    \end{block}
+    \begin{alertblock}{弱模型"兜底"效应}
+        GPT-3.5 原版 $\sim$7\% $\to$ \textbf{54\%}，增幅最大。合理的流程约束和提示词设计可在相当程度上补偿模型本身能力的不足。
+    \end{alertblock}
+    \begin{exampleblock}{现象}
+        GPT-4o-mini 表现优于参数规模更大的 GPT-4o，与原论文\cite{Wu2024AutoPT}观察一致
+    \end{exampleblock}
 \end{frame}
 
 \begin{frame}{RQ2：成本效益分析}
@@ -259,25 +221,10 @@
     \footnotesize
     \begin{columns}
         \column{.52\textwidth}
-        \begin{block}{方向一：PSM 流程控制}
-            \begin{itemize}
-                \item 状态转移优化与提前终止减少无效执行
-                \item 提示词结构化减少越权命令与格式错误
-                \item 上下文压缩有效控制 Token 增长
-            \end{itemize}
-        \end{block}
-        \begin{block}{方向二：工具扩展与优化}
-            \begin{itemize}
-                \item 浏览器工具 + 容错解析 + PoC 增强提取
-                \item 工具执行失败仅 \textbf{10.1\%}，各模型表现稳定
-                \item 错误的命令 29.4\%，4o-mini 最低（26.92\%）
-            \end{itemize}
-        \end{block}
-        \begin{block}{方向三：Web Console}
-            \begin{itemize}
-                \item 提高实验过程一致性与结果可复核性
-                \item 保障 300 组实验的基础支撑
-            \end{itemize}
+        \begin{block}{三个改进方向效果}
+            \textbf{PSM 流程}：提前终止省去无效执行，上下文压缩控制 Token 增长，提示词规范化减少越权命令 \\[0.3em]
+            \textbf{工具扩展}：浏览器 + 容错解析 + PoC 增强，工具执行失败仅 \textbf{10.1\%}，错误的命令 29.4\%（4o-mini 最低 26.92\%） \\[0.3em]
+            \textbf{Web Console}：提高实验过程一致性与结果可复核性，保障 300 组实验基础支撑
         \end{block}
 
         \column{.44\textwidth}
