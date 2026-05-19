@@ -1,38 +1,24 @@
 %% introduction.tex
 \section{研究背景}
 
-\begin{frame}{渗透测试的挑战与自动化需求}
+\begin{frame}{研究背景与问题}
     \footnotesize
-    \begin{block}{安全形势}
+    \begin{block}{安全形势与研究基础}
         \begin{itemize}
-            \item 全球渗透测试市场：2020年 \$17B $\to$ 2025年预计 \$45B
-            \item 传统渗透测试依赖人工，频繁切换 Nmap、Metasploit 等工具，流程割裂
-            \item 从业者专业要求高，测试成本居高不下，难以规模化
+            \item 渗透测试市场快速增长（\$17B $\to$ \$45B），传统人工测试流程割裂、成本居高不下
+            \item AutoPT\cite{Wu2024AutoPT} 以渗透测试状态机（PSM）约束 LLM，五阶段串联测试链路
         \end{itemize}
     \end{block}
 
-    \begin{block}{研究基础：AutoPT 与 PSM}
-        \begin{itemize}
-            \item Wu 等人的 AutoPT\cite{Wu2024AutoPT} 引入渗透测试状态机（PSM），以有限状态机约束 LLM 决策空间
-            \item PSM 将 Scan $\to$ VulnSelect $\to$ Inquire $\to$ Exploit $\to$ Check 五个阶段串联为自动化测试链路
-            \item 本文以 AutoPT 为基础，设计并实现了改进版系统 AutoPT+，针对三方面不足进行改进
-        \end{itemize}
-    \end{block}
-\end{frame}
-
-\begin{frame}{AutoPT 的主要局限}
-    \footnotesize
-    \begin{alertblock}{五个核心问题}
+    \begin{alertblock}{原始 PSM 三方面缺陷}
         \begin{enumerate}
-            \item \textbf{只扫默认端口（80）}：非标准端口服务（Elasticsearch 9200、Tomcat 8080）大量漏检
-            \item \textbf{转移条件固定}：扫描无漏洞时仍继续执行 Inquire 和 Exploit，资源浪费
-            \item \textbf{缺浏览器表单交互能力}：安装向导、下拉框等多步骤场景无工具可用
-            \item \textbf{ReAct 解析器零容忍}：思维链模型输出 \texttt{<thinking>} 标签导致解析失败直接终止
-            \item \textbf{仅命令行界面}：缺少图形化管理，可用性受限
+            \item \textbf{PSM 流程控制}：状态粒度过粗、转移条件固定、提示词缺乏角色定义
+            \item \textbf{工具体系缺口}：无表单交互（安装向导不可用）、ReAct 解析器对思维链输出零容忍
+            \item \textbf{系统可用性不足}：仅命令行，无法直观监控进度
         \end{enumerate}
     \end{alertblock}
 
     \begin{exampleblock}{本文三大改进方向}
-        (1) PSM 流程控制优化 \quad (2) Agent 工具扩展与容错增强 \quad (3) Web Console 图形化界面
+        (1) PSM 流程控制优化 $\quad$ (2) Agent 工具扩展与容错增强 $\quad$ (3) Web Console 图形化界面
     \end{exampleblock}
 \end{frame}
