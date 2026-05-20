@@ -8,7 +8,7 @@
         \begin{figure}
             \centering
             \includegraphics[width=\columnwidth,height=0.55\textheight,keepaspectratio]{contents/figure/arch.png}
-            \caption{AutoPT+ 四层架构图}
+            \caption{AutoPT+ 架构图}
         \end{figure}
 
         \column{.46\textwidth}
@@ -30,14 +30,11 @@
         \begin{figure}
             \centering
             \includegraphics[width=\columnwidth,height=0.6\textheight,keepaspectratio]{contents/figure/psm-original.png}
-            \caption{原版 PSM 五状态模型\cite{Wu2024AutoPT}}
+            \caption{原版 PSM 模型\cite{Wu2024AutoPT}}
         \end{figure}
 
         \column{.52\textwidth}
-        \begin{block}{形式化定义}
-            PSM = (\textit{S}, \textit{A}, \textit{T}, \textit{s}$_0$, \textit{F})
-        \end{block}
-        \begin{block}{五个状态}
+        \begin{block}{状态定义}
             \begin{enumerate}
                 \item \textbf{Scan}：端口扫描 \& 服务识别
                 \item \textbf{VulnSelect}：筛选值得尝试的漏洞
@@ -47,7 +44,7 @@
             \end{enumerate}
         \end{block}
         \begin{block}{实现}
-            基于 LangGraph StateGraph，五状态为图节点，路由函数根据状态输出动态决定转移路径
+            基于 LangGraph StateGraph实现，状态为图中节点，路由函数根据状态输出决定转移路径
         \end{block}
     \end{columns}
 \end{frame}
@@ -69,8 +66,8 @@
             \item \textbf{提示词规范}：统一 ReAct 模板 + 差异化角色
             \item \textbf{提前终止}：parse\_vuln 判空跳过下游（节省 $\sim$200s）
             \item \textbf{Scan 细化}：nmap$\to$services.yml$\to$xray$\to$评估；Exploit 7.2$\to$4.8
-            \item \textbf{PoC + Check}：四级容错；匹配域缩小 + LLM+正则双层校验
-            \item \textbf{上下文压缩}：即时摘要 + 三层结构化组装
+            \item \textbf{PoC + Check}：容错机制；匹配域缩小 + LLM+正则双层校验
+            \item \textbf{上下文压缩}：即时摘要 + 结构化组装
         \end{itemize}
     \end{columns}
 \end{frame}
@@ -154,7 +151,7 @@
     \footnotesize
     \begin{columns}
         \column{.52\textwidth}
-        \begin{block}{三个改进方向效果}
+        \begin{block}{改进效果}
             \textbf{PSM 流程}：提前终止省去无效执行，上下文压缩控制 Token 增长，提示词规范化减少越权命令 \\[0.3em]
             \textbf{工具扩展}：浏览器 + 容错解析 + PoC 增强，工具执行失败仅 \textbf{10.1\%}，错误的命令 29.4\%（4o-mini 最低 26.92\%） \\[0.3em]
             \textbf{Web Console}：提高实验过程一致性与结果可复核性，保障 300 组实验基础支撑

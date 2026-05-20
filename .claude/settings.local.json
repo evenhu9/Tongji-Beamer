@@ -1,0 +1,23 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(where pdftotext *)",
+      "Bash(where python *)",
+      "Bash(pdftotext \"C:\\\\Users\\\\86138\\\\Desktop\\\\毕业论文归档资料\\\\信息安全-2252552-胡译文-论文初稿.pdf\" /tmp/paper_output.txt)",
+      "Read(//tmp/**)",
+      "Bash(pdftotext \"C:/Users/86138/Desktop/毕业论文归档资料/信息安全-2252552-胡译文-论文初稿.pdf\" paper_text_output.txt)",
+      "Bash(where latexmk *)",
+      "Bash(where xelatex *)",
+      "Bash(where texlive *)",
+      "Read(//c/texlive/**)",
+      "Read(//c/Program Files/**)",
+      "Bash(python -c \"import fitz; print\\('PyMuPDF available'\\)\")",
+      "Bash(python -c \"import pdfminer; print\\('pdfminer available'\\)\")",
+      "Bash(pip list *)",
+      "Bash(python -c ' *)",
+      "Bash(ls \"C:/Users/86138/Desktop/TongjiThesis/\")",
+      "Read(//c/Users/86138/Desktop/TongjiThesis/**)",
+      "Bash(latexmk -xelatex -interaction=nonstopmode main.tex)"
+    ]
+  }
+}

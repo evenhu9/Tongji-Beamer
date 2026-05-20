@@ -3,22 +3,23 @@
 
 \begin{frame}{研究背景与问题}
     \footnotesize
-    \begin{block}{安全形势与研究基础}
+    \begin{block}{安全形势与研究现状}
         \begin{itemize}
-            \item 渗透测试市场快速增长（\$17B $\to$ \$45B），传统人工测试流程割裂、成本居高不下
-            \item AutoPT\cite{Wu2024AutoPT} 以渗透测试状态机（PSM）约束 LLM，五阶段串联测试链路
+            \item 渗透测试市场快速增长，传统人工测试流程割裂、成本居高不下
+            \item 
+            \item AutoPT\cite{Wu2024AutoPT} 以渗透测试状态机（PSM）约束 LLM 行为
         \end{itemize}
     \end{block}
 
-    \begin{alertblock}{原始 PSM 三方面缺陷}
+    \begin{alertblock}{原始 PSM 存在缺陷}
         \begin{enumerate}
             \item \textbf{PSM 流程控制}：状态粒度过粗、转移条件固定、提示词缺乏角色定义
-            \item \textbf{工具体系缺口}：无表单交互（安装向导不可用）、ReAct 解析器对思维链输出零容忍
+            \item \textbf{工具体系缺口}：模拟浏览器交互能力弱、ReAct 解析器无法处理思维链输出、poc提取工具误差大
             \item \textbf{系统可用性不足}：仅命令行，无法直观监控进度
         \end{enumerate}
     \end{alertblock}
 
-    \begin{exampleblock}{本文三大改进方向}
-        (1) PSM 流程控制优化 $\quad$ (2) Agent 工具扩展与容错增强 $\quad$ (3) Web Console 图形化界面
+    \begin{exampleblock}{核心目标}
+        (1) PSM 流程控制优化 $\quad$ (2) 工具扩展与容错增强 $\quad$ (3) Web Console 图形化界面
     \end{exampleblock}
 \end{frame}
