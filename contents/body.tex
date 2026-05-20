@@ -28,20 +28,20 @@
 \begin{frame}{改进一：PSM 流程控制优化}
     \footnotesize
     \begin{columns}
-        \column{.38\textwidth}
+        \column{.48\textwidth}
         \begin{figure}
             \centering
-            \includegraphics[width=\columnwidth,height=0.55\textheight,keepaspectratio]{contents/figure/psm.png}
+            \includegraphics[width=\columnwidth,height=0.65\textheight,keepaspectratio]{contents/figure/psm.png}
             \caption{改进前后状态转移模型对比}
         \end{figure}
 
-        \column{.58\textwidth}
+        \column{.48\textwidth}
         \begin{itemize}
-            \item \textbf{提示词规范}：统一 ReAct 模板 + 差异化角色（Scan ONLY / Inquire ONLY / Exploit 方法论）
-            \item \textbf{提前终止}：parse\_vuln 判断扫描结果，空则跳过下游（节省 $\sim$200s / 15K Token）
-            \item \textbf{Scan 细化}：nmap 全端口 $\to$ services.yml（100\%）$\to$ xray $\to$ 评估；Exploit 7.2$\to$4.8
-            \item \textbf{PoC + Check}：四级容错提取；匹配域缩至 raw\_outputs + LLM+正则双层校验
-            \item \textbf{上下文压缩}：即时摘要（2000 字符）+ 三层结构化组装
+            \item \textbf{提示词规范}：统一 ReAct 模板 + 差异化角色
+            \item \textbf{提前终止}：parse\_vuln 判空跳过下游（节省 $\sim$200s）
+            \item \textbf{Scan 细化}：nmap$\to$services.yml$\to$xray$\to$评估；Exploit 7.2$\to$4.8
+            \item \textbf{PoC + Check}：四级容错；匹配域缩小 + LLM+正则双层校验
+            \item \textbf{上下文压缩}：即时摘要 + 三层结构化组装
         \end{itemize}
     \end{columns}
 \end{frame}
