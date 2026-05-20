@@ -51,23 +51,19 @@
 \begin{frame}{浏览器扩展工具与 RobustReActParser}
     \footnotesize
     \begin{columns}
-        \column{.48\textwidth}
-        \begin{block}{三个浏览器扩展工具}
-            \begin{itemize}
-                \item \texttt{fill\_element}：定位 input/textarea，清空后填入文本（安装向导、登录表单）
-                \item \texttt{select\_option}：定位下拉框，按 value 或文本标签选择
-                \item \texttt{wait\_for\_selector}：等待元素出现并可见，支持自定义超时
-            \end{itemize}
-        \end{block}
+        \column{.42\textwidth}
+        \begin{figure}
+            \centering
+            \includegraphics[width=\columnwidth,height=0.55\textheight,keepaspectratio]{contents/figure/browser.png}
+            \caption{浏览器工具层架构}
+        \end{figure}
 
-        \column{.48\textwidth}
-        \begin{block}{RobustReActParser 多级容错}
-            原版：格式偏差 $\to$ 直接抛异常终止循环 \\[0.5em]
-            改进版通过降级策略（清洗思维链标签 $\to$ 标准解析 $\to$ 宽松正则 $\to$ Action 提取 $\to$ 模糊匹配 $\to$ 格式引导）将解析失败转为可恢复的中间状态。
-        \end{block}
-        \begin{block}{ReadHTML PoC 增强提取}
-            匹配 GitHub vulhub 仓库时自动提取 README 中的 PoC 代码块，过滤环境搭建与 Docker 命令，仅返回利用相关命令。
-        \end{block}
+        \column{.55\textwidth}
+        \begin{itemize}
+            \item \textbf{三个浏览器扩展工具}：\texttt{fill\_element}、\texttt{select\_option}、\texttt{wait\_for\_selector}，补齐表单交互
+            \item \textbf{RobustReActParser}：六步降级（清洗$\to$标准$\to$宽松$\to$提取$\to$模糊$\to$引导），容错非标准输出
+            \item \textbf{ReadHTML PoC 增强}：自动提取 vulhub README 中 PoC 代码块，过滤 Docker/环境搭建命令
+        \end{itemize}
     \end{columns}
 \end{frame}
 
@@ -76,7 +72,7 @@
 \begin{frame}{Web Console 图形化管理界面}
     \footnotesize
     \begin{columns}
-        \column{.50\textwidth}
+        \column{.48\textwidth}
         \begin{block}{六个功能模块}
             \begin{itemize}
                 \item \textbf{控制台}：系统状态总览、OWASP 分类统计
@@ -87,16 +83,13 @@
                 \item \textbf{系统设置}：API Key、模型参数配置
             \end{itemize}
         \end{block}
+
+        \column{.48\textwidth}
         \begin{block}{技术选型}
             Flask RESTful · 原生 JavaScript SPA · HTTP 轮询 1.5s · textContent 防 XSS
         \end{block}
-
-        \column{.46\textwidth}
-        \begin{figure}
-            \centering
-            \includegraphics[width=\columnwidth,height=0.55\textheight,keepaspectratio]{contents/figure/browser.png}
-            \caption{浏览器工具层架构}
-        \end{figure}
+        \vfill
+        \centering\alert{演示视频}
     \end{columns}
 \end{frame}
 
