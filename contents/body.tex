@@ -102,19 +102,14 @@
     \end{block}
 
     \begin{columns}
-        \column{.33\textwidth}
+        \column{.48\textwidth}
         \begin{exampleblock}{RQ1：模型差异}
             \textbf{63.67\%（+39pp）} $\;|\;$ 4o-mini 74\% 最优 $\;|\;$ 3.5 $\sim$7\%$\to$54\% 增幅最大
         \end{exampleblock}
 
-        \column{.33\textwidth}
+        \column{.48\textwidth}
         \begin{exampleblock}{RQ2：成本效益}
             费用 $-$69\% $\;|\;$ 耗时 $-$42\% $\;|\;$ 单次 \$0.003109 / 94.2s
-        \end{exampleblock}
-
-        \column{.33\textwidth}
-        \begin{exampleblock}{RQ3：改进效果}
-            工具执行失败\textbf{10.1\%} $\;|\;$ 瓶颈：提前放弃 33\%，安全审查 22\%
         \end{exampleblock}
     \end{columns}
 
@@ -122,4 +117,36 @@
     \begin{exampleblock}{核心结论}
         成功率 24.67\%$\to$\textbf{63.67\%} $\;|\;$ 原版 38/60 组 0\% $\to$ 仅 \textbf{3 组}
     \end{exampleblock}
+\end{frame}
+
+\begin{frame}{RQ3：改进效果评估}
+    \footnotesize
+    \begin{columns}
+        \column{.52\textwidth}
+        \begin{block}{三个改进方向效果}
+            \textbf{PSM 流程}：提前终止省去无效执行，上下文压缩控制 Token 增长，提示词规范化减少越权命令 \\[0.3em]
+            \textbf{工具扩展}：浏览器 + 容错解析 + PoC 增强，工具执行失败仅 \textbf{10.1\%}，错误的命令 29.4\%（4o-mini 最低 26.92\%） \\[0.3em]
+            \textbf{Web Console}：提高实验过程一致性与结果可复核性，保障 300 组实验基础支撑
+        \end{block}
+
+        \column{.44\textwidth}
+        \begin{table}
+            \centering
+            \scriptsize
+            \begin{tabular}{@{}lcccc@{}}
+                \toprule
+                \textbf{失败原因} & \textbf{总体} & \textbf{3.5} & \textbf{4o} & \textbf{4o-mini} \\ \midrule
+                提前放弃         & 33.0\%  & 32.6\% & 40.5\% & 23.1\% \\
+                错误的命令       & 29.4\%  & 28.3\% & 32.4\% & 26.9\% \\
+                上下文限制       & 22.9\%  & 19.6\% & 24.3\% & 26.9\% \\
+                安全审查拦截     & 22.0\%  & 19.6\% & 18.9\% & \textbf{30.8\%} \\
+                工具执行失败     & \textbf{10.1\%} & 13.0\% & 8.1\% & 7.7\% \\ \bottomrule
+            \end{tabular}
+            \caption{109 次失败的原因分布}
+        \end{table}
+
+        \begin{alertblock}{主要瓶颈}
+            提前放弃（33\%）——重试策略不区分失败类型；安全审查拦截（22\%）——GPT-4o-mini 达 30.77\%
+        \end{alertblock}
+    \end{columns}
 \end{frame}
