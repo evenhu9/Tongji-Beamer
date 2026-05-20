@@ -16,9 +16,38 @@
             \begin{itemize}
                 \item \textbf{表示层}：Web Console（Flask + HTML）
                 \item \textbf{业务逻辑层}：RESTful 接口、Docker 容器管理
-                \item \textbf{核心引擎层}：LangGraph 状态机、Agent、VulnSelect / Check
-                \item \textbf{基础设施层}：nmap · xray · Playwright · Docker Engine
+                \item \textbf{核心引擎层}：基于LangGraph 实现的 PSM 状态机
+                \item \textbf{基础设施层}：nmap · xray · Playwright · Docker
             \end{itemize}
+        \end{block}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{PSM 渗透测试状态机}
+    \footnotesize
+    \begin{columns}
+        \column{.45\textwidth}
+        \begin{figure}
+            \centering
+            \includegraphics[width=\columnwidth,height=0.6\textheight,keepaspectratio]{contents/figure/psm-original.png}
+            \caption{原版 PSM 五状态模型\cite{Wu2024AutoPT}}
+        \end{figure}
+
+        \column{.52\textwidth}
+        \begin{block}{形式化定义}
+            PSM = (\textit{S}, \textit{A}, \textit{T}, \textit{s}$_0$, \textit{F})
+        \end{block}
+        \begin{block}{五个状态}
+            \begin{enumerate}
+                \item \textbf{Scan}：端口扫描 \& 服务识别
+                \item \textbf{VulnSelect}：筛选值得尝试的漏洞
+                \item \textbf{Inquire}：检索外部 PoC 与利用方法
+                \item \textbf{Exploit}：执行漏洞利用操作
+                \item \textbf{Check}：验证利用是否成功，失败则回退至 Exploit 或 VulnSelect
+            \end{enumerate}
+        \end{block}
+        \begin{block}{实现}
+            基于 LangGraph StateGraph，五状态为图节点，路由函数根据状态输出动态决定转移路径
         \end{block}
     \end{columns}
 \end{frame}
@@ -31,11 +60,11 @@
         \column{.48\textwidth}
         \begin{figure}
             \centering
-            \includegraphics[width=\columnwidth,height=0.65\textheight,keepaspectratio]{contents/figure/psm.png}
+            \includegraphics[width=\columnwidth,height=0.80\textheight,keepaspectratio]{contents/figure/psm.png}
             \caption{改进前后状态转移模型对比}
         \end{figure}
 
-        \column{.48\textwidth}
+        \column{.52\textwidth}
         \begin{itemize}
             \item \textbf{提示词规范}：统一 ReAct 模板 + 差异化角色
             \item \textbf{提前终止}：parse\_vuln 判空跳过下游（节省 $\sim$200s）
@@ -60,9 +89,9 @@
 
         \column{.55\textwidth}
         \begin{itemize}
-            \item \textbf{三个浏览器扩展工具}：\texttt{fill\_element}、\texttt{select\_option}、\texttt{wait\_for\_selector}，补齐表单交互
-            \item \textbf{RobustReActParser}：六步降级（清洗$\to$标准$\to$宽松$\to$提取$\to$模糊$\to$引导），容错非标准输出
-            \item \textbf{ReadHTML PoC 增强}：自动提取 vulhub README 中 PoC 代码块，过滤 Docker/环境搭建命令
+            \item \textbf{浏览器扩展工具设计}：\texttt{fill\_element}、\texttt{select\_option}、\texttt{wait\_for\_selector}，补齐表单交互
+            \item \textbf{RobustReAct}：六步降级（清洗$\to$标准$\to$宽松$\to$提取$\to$模糊$\to$引导），容错非标准输出
+            \item \textbf{ReadHTML PoC 增强}：优先提取 vulhub中 PoC
         \end{itemize}
     \end{columns}
 \end{frame}
@@ -83,15 +112,17 @@
                 \item \textbf{系统设置}：API Key、模型参数配置
             \end{itemize}
         \end{block}
+        \begin{block}{技术选型}
+            Flask RESTful · 原生 JavaScript SPA · HTTP 轮询 1.5s 
+        \end{block}
 
         \column{.48\textwidth}
-        \begin{block}{技术选型}
-            Flask RESTful · 原生 JavaScript SPA · HTTP 轮询 1.5s · textContent 防 XSS
-        \end{block}
+       
         \vfill
         \centering\alert{演示视频}
     \end{columns}
 \end{frame}
+
 
 \section{实验与评估}
 
@@ -142,11 +173,7 @@
                 安全审查拦截     & 22.0\%  & 19.6\% & 18.9\% & \textbf{30.8\%} \\
                 工具执行失败     & \textbf{10.1\%} & 13.0\% & 8.1\% & 7.7\% \\ \bottomrule
             \end{tabular}
-            \caption{109 次失败的原因分布}
+            \caption{失败原因分布}
         \end{table}
-
-        \begin{alertblock}{主要瓶颈}
-            提前放弃（33\%）——重试策略不区分失败类型；安全审查拦截（22\%）——GPT-4o-mini 达 30.77\%
-        \end{alertblock}
     \end{columns}
 \end{frame}
