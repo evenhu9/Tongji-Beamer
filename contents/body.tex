@@ -65,7 +65,7 @@
         \begin{itemize}
             \item \textbf{Scan子阶段划分}：将原单一阶段拆分为：nmap端口发现 → 服务知识匹配 → 漏洞扫描 (xray)
             \item \textbf{提前终止机制}：parse\_vuln 判空跳过下游（节省 $\sim$200s）
-            \item \textbf{}：
+            \item \textbf{提示词规范}：统一 ReAct 模板 + 差异化角色
             \item \textbf{PoC + Check}：容错机制；匹配域缩小 + LLM+正则双层校验
             \item \textbf{上下文压缩}：即时摘要 + 结构化组装
         \end{itemize}
