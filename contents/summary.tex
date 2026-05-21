@@ -4,23 +4,15 @@
 \begin{frame}{工作总结与展望}
     \scriptsize
     \begin{columns}
-        \column{.52\textwidth}
-        \begin{block}{改进与实验结论}
-            \begin{itemize}
-                \item \textbf{PSM 流程控制}：Scan 子阶段划分 + 提前终止 + 上下文压缩 + Check 双层验证
-                \item \textbf{工具与容错}：浏览器扩展工具 + RobustReActParser 多级降级
-                \item \textbf{Web Console}：六模块图形化管理界面
-            \end{itemize}
+        \begin{block}{总结}
             \vspace{0.5em}
-            基于 300 次独立实验：总体成功率 24.67\% $\to$ \textbf{63.67\%（+39pp）}；成本 $-$69\%，耗时 $-$42\%；工具执行失败仅 \textbf{10.1\%}
-        \end{block}
-
-        \column{.44\textwidth}
+            改进版AutoPT+总体成功率从原版的24.67\%提升至63.67\%（+39\%），同时单次测试成本降低69\%、耗时缩短42\%，其中对弱模型gpt-3.5-turbo提升尤为显著。
+        \end{block}   
         \begin{alertblock}{现有不足}
             \begin{enumerate}
-                \item \textbf{提前放弃（33\%）}：重试建议不区分失败类型
+                \item \textbf{提前放弃（33\%）}：重试建议没有区分失败类型
                 \item \textbf{安全审查拦截（22\%）}：模型拒绝生成攻击性命令
-                \item \textbf{覆盖范围局限}：仅 Web 应用层 CVE
+                \item \textbf{覆盖范围局限}：仅针对 Web 应用层漏洞
             \end{enumerate}
         \end{alertblock}
         \begin{block}{未来工作}
