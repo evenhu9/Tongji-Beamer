@@ -1,28 +1,6 @@
 %% body.tex
 \section{系统设计}
 
-\begin{frame}{系统总体架构}
-    \scriptsize
-    \begin{columns}
-        \column{.40\textwidth}
-        \begin{figure}
-            \centering
-            \includegraphics[width=\columnwidth,height=0.55\textheight,keepaspectratio]{contents/figure/arch.png}
-            \caption{AutoPT+ 架构图}
-        \end{figure}
-
-        \column{.46\textwidth}
-        \begin{block}{分层设计}
-            \begin{itemize}
-                \item \textbf{表示层}：Web Console 提供图形化管理界面，管理docker靶机、渗透测试状态与实验数据分析
-                \item \textbf{业务逻辑层}：基于 Flask API 构建，负责处理请求与任务调度
-                \item \textbf{核心引擎层}：基于LangGraph 实现的 PSM 引擎，是渗透测试的实际执行者
-                \item \textbf{基础设施层}：集成 Nmap、Xray、Playwright 等专业工具，提供底层的扫描与验证能力
-            \end{itemize}
-        \end{block}
-    \end{columns}
-\end{frame}
-
 \begin{frame}{PSM 渗透测试状态机}
     \scriptsize
     \begin{columns}
@@ -44,7 +22,29 @@
             \end{enumerate}
         \end{block}
         \begin{block}{实现}
-            基于 LangGraph StateGraph实现，状态为图中节点，路由函数根据状态输出决定转移路径
+            基于 LangGraph 实现，状态为图中节点，路由函数根据状态输出决定转移路径
+        \end{block}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{系统总体架构}
+    \scriptsize
+    \begin{columns}
+        \column{.40\textwidth}
+        \begin{figure}
+            \centering
+            \includegraphics[width=\columnwidth,height=0.55\textheight,keepaspectratio]{contents/figure/arch.png}
+            \caption{AutoPT+ 架构图}
+        \end{figure}
+
+        \column{.46\textwidth}
+        \begin{block}{分层设计}
+            \begin{itemize}
+                \item \textbf{表示层}：Web Console 提供图形化管理界面，管理docker靶机、渗透测试状态与实验数据分析
+                \item \textbf{业务逻辑层}：基于 Flask API 构建，负责处理请求与任务调度
+                \item \textbf{核心引擎层}：基于LangGraph 实现的 PSM 引擎，是渗透测试的实际执行者
+                \item \textbf{基础设施层}：集成 Nmap、Xray、Playwright 等专业工具，提供底层的扫描与验证能力
+            \end{itemize}
         \end{block}
     \end{columns}
 \end{frame}
@@ -114,9 +114,11 @@
         \end{block}
 
         \column{.48\textwidth}
-       
-        \vfill
-        \centering\alert{演示视频}
+        \begin{figure}
+            \centering
+            \includegraphics[width=\columnwidth,height=0.55\textheight,keepaspectratio]{contents/figure/webconsole.jpg}
+            \caption{Web Console 界面展示}
+        \end{figure}
     \end{columns}
 \end{frame}
 
