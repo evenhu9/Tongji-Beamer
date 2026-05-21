@@ -14,10 +14,10 @@
         \column{.46\textwidth}
         \begin{block}{分层设计}
             \begin{itemize}
-                \item \textbf{表示层}：Web Console（Flask + HTML）
-                \item \textbf{业务逻辑层}：RESTful 接口、Docker 容器管理
-                \item \textbf{核心引擎层}：基于LangGraph 实现的 PSM 状态机
-                \item \textbf{基础设施层}：nmap · xray · Playwright · Docker
+                \item \textbf{表示层}：Web Console 提供图形化管理界面，管理docker靶机、渗透测试状态与实验数据分析
+                \item \textbf{业务逻辑层}：基于 Flask API 构建，负责处理请求与任务调度
+                \item \textbf{核心引擎层}：基于LangGraph 实现的 PSM 引擎，是渗透测试的实际执行者
+                \item \textbf{基础设施层}：集成 Nmap、Xray、Playwright 等专业工具，提供底层的扫描与验证能力
             \end{itemize}
         \end{block}
     \end{columns}
@@ -26,20 +26,20 @@
 \begin{frame}{PSM 渗透测试状态机}
     \scriptsize
     \begin{columns}
-        \column{.45\textwidth}
+        \column{.48\textwidth}
         \begin{figure}
             \centering
-            \includegraphics[width=\columnwidth,height=0.6\textheight,keepaspectratio]{contents/figure/psm-original.png}
+            \includegraphics[width=\columnwidth,height=0.70\textheight,keepaspectratio]{contents/figure/psm-original.png}
             \caption{原版 PSM 模型\cite{Wu2024AutoPT}}
         \end{figure}
 
         \column{.52\textwidth}
         \begin{block}{状态定义}
             \begin{enumerate}
-                \item \textbf{Scan}：端口扫描 \& 服务识别
-                \item \textbf{VulnSelect}：筛选值得尝试的漏洞
-                \item \textbf{Inquire}：检索外部 PoC 与利用方法
-                \item \textbf{Exploit}：执行漏洞利用操作
+                \item \textbf{Scan}：执行端口与漏洞扫描
+                \item \textbf{VulnSelect}：从扫描结果中选择漏洞
+                \item \textbf{Inquire}：针对选定漏洞，检索外部 PoC 与利用方法
+                \item \textbf{Exploit}：调用工具执行漏洞利用操作，使用playwright模拟浏览器交互
                 \item \textbf{Check}：验证利用是否成功，失败则回退至 Exploit 或 VulnSelect
             \end{enumerate}
         \end{block}
@@ -57,15 +57,15 @@
         \column{.48\textwidth}
         \begin{figure}
             \centering
-            \includegraphics[width=\columnwidth,height=0.80\textheight,keepaspectratio]{contents/figure/psm.png}
+            \includegraphics[width=\columnwidth,height=0.70\textheight,keepaspectratio]{contents/figure/psm.png}
             \caption{改进前后状态转移模型对比}
         \end{figure}
 
         \column{.52\textwidth}
         \begin{itemize}
-            \item \textbf{提示词规范}：统一 ReAct 模板 + 差异化角色
-            \item \textbf{提前终止}：parse\_vuln 判空跳过下游（节省 $\sim$200s）
-            \item \textbf{Scan 细化}：nmap$\to$services.yml$\to$xray$\to$评估；Exploit 7.2$\to$4.8
+            \item \textbf{Scan子阶段划分}：将原单一阶段拆分为：nmap端口发现 → 服务知识匹配 → 漏洞扫描 (xray)
+            \item \textbf{提前终止机制}：parse\_vuln 判空跳过下游（节省 $\sim$200s）
+            \item \textbf{}：
             \item \textbf{PoC + Check}：容错机制；匹配域缩小 + LLM+正则双层校验
             \item \textbf{上下文压缩}：即时摘要 + 结构化组装
         \end{itemize}
