@@ -63,18 +63,19 @@
 
         \column{.52\textwidth}
         \begin{itemize}
-            \item \textbf{Scan子阶段划分}：将原单一阶段拆分为：nmap端口发现 → 服务知识匹配 → 漏洞扫描 (xray)
-            \item \textbf{提前终止机制}：parse\_vuln 判空跳过下游（节省 $\sim$200s）
-            \item \textbf{提示词规范}：统一 ReAct 模板 + 差异化角色
-            \item \textbf{PoC + Check}：容错机制；匹配域缩小 + LLM+正则双层校验
-            \item \textbf{上下文压缩}：即时摘要 + 结构化组装
+            \item \textbf{提前终止机制}：新增条件判断，若漏洞列表为空，则跳过下游状态直接结束
+            \item \textbf{Scan子阶段划分}：将原单一阶段拆分为：端口发现与服务识别 → 服务知识匹配 → 漏洞扫描 → 结果评估与终止判断
+            \item \textbf{PoC容错提取}：Inquire Agent尝试获取PoC时依次从 Agent 的 Final Answer、推理文本、ReadHTML 原始捕获内容和原始输出四个层级尝试提取，避免因解析失败而丢失数据
+            \item \textbf{Check结果匹配}：check阶段只对工具输出做目标结果匹配，并引入 LLM 自主判断是否成功
+            \item \textbf{提示词规范}：提示词加入统一的格式约束，并对不同的agent设计不同的角色定义和权限边界
+            \item \textbf{上下文压缩}：将LLM上下文按照完整保留任务目标、对历史对话做LLM摘要、截取最近两条工具输出的流程进行压缩
         \end{itemize}
     \end{columns}
 \end{frame}
 
 \section{改进二：工具扩展与容错}
 
-\begin{frame}{浏览器扩展工具与 RobustReActParser}
+\begin{frame}{浏览器扩展工具与容错能力提升}
     \scriptsize
     \begin{columns}
         \column{.42\textwidth}
@@ -87,8 +88,8 @@
         \column{.55\textwidth}
         \begin{itemize}
             \item \textbf{浏览器扩展工具设计}：\texttt{fill\_element}、\texttt{select\_option}、\texttt{wait\_for\_selector}，补齐表单交互
-            \item \textbf{RobustReAct}：六步降级（清洗$\to$标准$\to$宽松$\to$提取$\to$模糊$\to$引导），容错非标准输出
-            \item \textbf{ReadHTML PoC 增强}：优先提取 vulhub中 PoC
+            \item \textbf{ReAct解析器优化}：六步降级（清洗$\to$标准$\to$宽松$\to$提取$\to$模糊$\to$引导），容错非标准输出
+            \item \textbf{ReadHTML工具增强}：优先提取 vulhub中 PoC
         \end{itemize}
     \end{columns}
 \end{frame}
@@ -101,16 +102,16 @@
         \column{.45\textwidth}
         \begin{block}{六个功能模块}
             \begin{itemize}
-                \item \textbf{控制台}：系统状态总览、OWASP 分类统计
-                \item \textbf{漏洞库}：20 个 CVE 展示，搜索/难度筛选
-                \item \textbf{渗透测试面板}：一键发起，实时日志（1.5s 轮询）
-                \item \textbf{靶机管理}：Docker 容器启/停/销毁监控
-                \item \textbf{测试报告}：历史记录、成本/Token 多维分析
-                \item \textbf{系统设置}：API Key、模型参数配置
+                \item \textbf{控制台}：总览系统状态与web console所有功能入口
+                \item \textbf{漏洞库}：展示基准测试的20个CVE ，支持关键字搜索、漏洞分类/难度筛选
+                \item \textbf{渗透测试}：能够一键创建任务，支持langgraph的debug模式，实时显示测试进度与状态
+                \item \textbf{靶机管理}：支持一键对Docker 容器启/停/销毁，并展示运行中的容器列表
+                \item \textbf{测试报告}：显示测试历史记录，从成功率、成本、工具调用次数等多个维度进行分析
+                \item \textbf{系统设置}：可配置LLM模型参数和PSM流程控制参数，同时显示系统信息
             \end{itemize}
         \end{block}
         \begin{block}{技术选型}
-            Flask RESTful · 原生 JavaScript SPA · HTTP 轮询 1.5s 
+            后端 Flask · RESTful API · 前端 JavaScript · HTTP 轮询间隔1.5s 
         \end{block}
 
         \column{.55\textwidth}
@@ -154,9 +155,9 @@
     \begin{columns}
         \column{.52\textwidth}
         \begin{block}{改进效果}
-            \textbf{PSM 流程}：提前终止省去无效执行，上下文压缩控制 Token 增长，提示词规范化减少越权命令 \\[0.3em]
-            \textbf{工具扩展}：浏览器 + 容错解析 + PoC 增强，工具执行失败仅 \textbf{10.1\%}，错误的命令 29.4\%（4o-mini 最低 26.92\%） \\[0.3em]
-            \textbf{Web Console}：提高实验过程一致性与结果可复核性，保障 300 组实验基础支撑
+            \textbf{PSM 流程}：状态细化与提前终止能够缩短执行时间，上下文压缩降低Token成本，提示词规范化减少越权命令 \\[0.3em]
+            \textbf{工具扩展}：工具执行失败率仅 \textbf{10.1\%}，错误的命令仅占 29.4\% \\[0.3em]
+            \textbf{Web Console}：提高实验便捷度与结果可读性，为 300 组实验提供了基础支撑
         \end{block}
 
         \column{.44\textwidth}
