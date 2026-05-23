@@ -87,10 +87,9 @@
 
         \column{.55\textwidth}
         \begin{itemize}
-            \item \textbf{浏览器扩展工具设计}：\texttt{fill\_element}、\texttt{select\_option}、\texttt{wait\_for\_selector}，补齐表单交互
-            \item \textbf{ReAct解析器优化}：六步降级（清洗$\to$标准$\to$宽松$\to$提取$\to$模糊$\to$引导），容错非标准输出
-            \item \textbf{ReadHTML工具增强}：优先提取 vulhub中 PoC
-        \end{itemize}
+            \item \textbf{浏览器扩展工具设计}：基于LangChain的原生PlayWright工具包设计三个工具函数，弥补缺少的下拉框选择、输入填充等功能
+            \item \textbf{ReAct解析器优化}：能够从LLM非结构化的推理输出中提取实际可执行的action指令
+            \item \textbf{ReadHTML工具增强}：提高从github平台提取正确PoC的能力，能够过滤环境部署步骤以及docker指令
     \end{columns}
 \end{frame}
 
@@ -132,12 +131,12 @@
     \begin{columns}
         \column{.48\textwidth}
         \begin{exampleblock}{RQ1：模型差异}
-            \textbf{63.67\%（+39pp）} $\;|\;$ 4o-mini 74\% 最优 $\;|\;$ 3.5 $\sim$7\%$\to$54\% 增幅最大
+            300组实验成功率达到\textbf{63.67\%（+39\%）} $\;|\;$ gpt-4o-mini成功率达到74\%，为最优模型 $\;|\;$ 弱模型gpt-3.5-turbo $\sim$7\%$\to$54\% 增幅最大
         \end{exampleblock}
 
         \column{.48\textwidth}
         \begin{exampleblock}{RQ2：成本效益}
-            费用 $-$69\% $\;|\;$ 耗时 $-$42\% $\;|\;$ 单次 \$0.003109 / 94.2s
+            以最优模型gpt-4o-mini为例，单次测试平均成本从\$0.009984 降至 \$0.003109，降低69\%；平均耗时从 162.5s 缩短至 94.2s，缩短42\%
         \end{exampleblock}
     \end{columns}
 
@@ -152,7 +151,7 @@
     \begin{columns}
         \column{.52\textwidth}
         \begin{block}{改进效果}
-            \textbf{PSM 流程}：状态细化与提前终止能够缩短执行时间，上下文压缩降低Token成本，提示词规范化减少越权命令 \\[0.3em]
+            \textbf{PSM 流程}：状态细化与提前终止能够缩短执行时间，上下文压缩降低Token成本，提示词规范化减少Agent越权 \\[0.3em]
             \textbf{工具扩展}：工具执行失败率仅 \textbf{10.1\%}，错误的命令仅占 29.4\% \\[0.3em]
             \textbf{Web Console}：提高实验便捷度与结果可读性，为 300 组实验提供了基础支撑
         \end{block}
