@@ -17,6 +17,6 @@
 # Keep the PDF (compiled output)
 # main.pdf
 .DS_Store
-*.pdf
+main.pdf
 .claude/
 答辩讲述稿.md
