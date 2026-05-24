@@ -65,7 +65,6 @@
         \begin{itemize}
             \item \textbf{提前终止机制}：新增条件判断，若漏洞列表为空，则跳过下游状态直接结束
             \item \textbf{Scan子阶段划分}：将原单一阶段拆分为：端口发现与服务识别 → 服务知识匹配 → 漏洞扫描 → 结果评估与终止判断
-            \item \textbf{PoC容错提取}：Inquire Agent尝试获取PoC时依次从 Agent 的 Final Answer、推理文本、ReadHTML 原始捕获内容和原始输出四个层级尝试提取，避免因解析失败而丢失数据
             \item \textbf{Check结果匹配}：check阶段只对工具输出做目标结果匹配，并引入 LLM 自主判断是否成功
             \item \textbf{提示词规范}：提示词加入统一的格式约束，并对不同的agent设计不同的角色定义和权限边界
             \item \textbf{上下文压缩}：将LLM上下文按照完整保留任务目标、对历史对话做LLM摘要、截取最近两条工具输出的流程进行压缩
