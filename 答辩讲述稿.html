@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="UTF-8">
+            <title>&#x8bba;&#x6587;&#x7b54;&#x8fa9;&#x8bb2;&#x8ff0;&#x7a3f;</title>
+            <style>
+/* From extension vscode.github */
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+.vscode-dark img[src$=\#gh-light-mode-only],
+.vscode-light img[src$=\#gh-dark-mode-only],
+.vscode-high-contrast:not(.vscode-high-contrast-light) img[src$=\#gh-light-mode-only],
+.vscode-high-contrast-light img[src$=\#gh-dark-mode-only] {
+	display: none;
+}
+
+</style>
+            
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/markdown.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/highlight.css">
+<style>
+            body {
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe WPC', 'Segoe UI', system-ui, 'Ubuntu', 'Droid Sans', sans-serif;
+                font-size: 14px;
+                line-height: 1.6;
+            }
+        </style>
+        <style>
+.task-list-item {
+    list-style-type: none;
+}
+
+.task-list-item-checkbox {
+    margin-left: -20px;
+    vertical-align: middle;
+    pointer-events: none;
+}
+</style>
+<style>
+:root {
+  --color-note: #0969da;
+  --color-tip: #1a7f37;
+  --color-warning: #9a6700;
+  --color-severe: #bc4c00;
+  --color-caution: #d1242f;
+  --color-important: #8250df;
+}
+
+</style>
+<style>
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-note: #2f81f7;
+    --color-tip: #3fb950;
+    --color-warning: #d29922;
+    --color-severe: #db6d28;
+    --color-caution: #f85149;
+    --color-important: #a371f7;
+  }
+}
+
+</style>
+<style>
+.markdown-alert {
+  padding: 0.5rem 1rem;
+  margin-bottom: 16px;
+  color: inherit;
+  border-left: .25em solid #888;
+}
+
+.markdown-alert>:first-child {
+  margin-top: 0
+}
+
+.markdown-alert>:last-child {
+  margin-bottom: 0
+}
+
+.markdown-alert .markdown-alert-title {
+  display: flex;
+  font-weight: 500;
+  align-items: center;
+  line-height: 1
+}
+
+.markdown-alert .markdown-alert-title .octicon {
+  margin-right: 0.5rem;
+  display: inline-block;
+  overflow: visible !important;
+  vertical-align: text-bottom;
+  fill: currentColor;
+}
+
+.markdown-alert.markdown-alert-note {
+  border-left-color: var(--color-note);
+}
+
+.markdown-alert.markdown-alert-note .markdown-alert-title {
+  color: var(--color-note);
+}
+
+.markdown-alert.markdown-alert-important {
+  border-left-color: var(--color-important);
+}
+
+.markdown-alert.markdown-alert-important .markdown-alert-title {
+  color: var(--color-important);
+}
+
+.markdown-alert.markdown-alert-warning {
+  border-left-color: var(--color-warning);
+}
+
+.markdown-alert.markdown-alert-warning .markdown-alert-title {
+  color: var(--color-warning);
+}
+
+.markdown-alert.markdown-alert-tip {
+  border-left-color: var(--color-tip);
+}
+
+.markdown-alert.markdown-alert-tip .markdown-alert-title {
+  color: var(--color-tip);
+}
+
+.markdown-alert.markdown-alert-caution {
+  border-left-color: var(--color-caution);
+}
+
+.markdown-alert.markdown-alert-caution .markdown-alert-title {
+  color: var(--color-caution);
+}
+
+</style>
+        
+        </head>
+        <body class="vscode-body vscode-light">
+            <span id="markdown-mermaid" aria-hidden="true" data-config="{&quot;darkModeTheme&quot;:&quot;dark&quot;,&quot;lightModeTheme&quot;:&quot;default&quot;,&quot;maxTextSize&quot;:50000,&quot;clickDrag&quot;:&quot;alt&quot;,&quot;showControls&quot;:&quot;onHoverOrFocus&quot;,&quot;resizable&quot;:true,&quot;maxHeight&quot;:&quot;&quot;}"></span>
+				<h1 id="论文答辩讲述稿">论文答辩讲述稿</h1>
+<p>各位老师好，我是胡译文，我的毕业设计题目是《基于状态机的自动化渗透测试框架设计与实现》，指导老师钟计东老师。</p>
+<hr>
+<p><strong>第一页：研究背景与问题</strong></p>
+<p>渗透测试是Web安全防护的关键手段，但传统人工方式存在效率低、成本高、依赖专家经验等明显缺陷。随着大语言模型的发展，用Agent实现自动化渗透测试成为当前网络安全领域的研究热点之一。AutoPT是其中的代表性工作，它用渗透测试状态机PSM来引导Agent执行测试任务。但在复现中我发现原版PSM存在三个突出问题：一是PSM流程控制上存在状态粒度过粗、转移条件固定和提示词缺乏规范等问题，导致Agent容易越权和空转；二是工具体系有缺陷，现有工具的浏览器交互能力弱、解析器容错能力差；三是只有命令行界面，在使用时不够直观。针对这三点，本文以优化了PSM流程控制与工具体系的状态机为核心，并加入web控制台，完成了基于状态机的自动化渗透测试框架设计。</p>
+<hr>
+<p><strong>第二页：PSM渗透测试状态机</strong></p>
+<p>PSM由Scan、VulnSelect、Inquire、Exploit、Check五个状态串联而成，其中Scan、Inquire和Exploit由独立的agent执行任务。Scan Agent执行端口扫描与漏洞识别，VulnSelect状态从扫描结果中选一个漏洞进入Inquire。Inquire Agent检索GitHub获取对应CVE的PoC利用代码，获取后进入Exploit。Exploit Agent调用curl，Playwright等工具执行漏洞利用，完成后进入Check。Check阶段验证利用结果，如果成功则正常结束；如果失败，路由函数根据设定的最大重试次数决定回退到Exploit重试或回退到VulnSelect换一个漏洞。它基于LangGraph实现，支持回退和循环执行，这是它和纯线性流程最大的区别。</p>
+<hr>
+<p><strong>第三页：系统总体架构</strong></p>
+<p>在此基础上，本框架采用四层架构设计。最底层是基础设施层，集成Nmap、Xray、Playwright等工具；核心引擎层运行PSM；业务逻辑层基于Flask后端，负责与PSM进行数据传递；最上层是Web Console表示层，负责展示各项数据。各层彼此解耦，具有一定可扩展性与可维护性。</p>
+<hr>
+<p><strong>第四页：改进一——PSM流程控制优化</strong></p>
+<p>接下来具体介绍三个改进方向。改进一围绕PSM流程控制展开，包含五项措施。一是状态提前终止，在scan状态后加入条件判断，漏洞列表为空时直接结束，避免下游agent空转。二是将Scan拆分为端口发现、服务匹配、漏洞扫描、结果评估四个子阶段，引入nmap全端口扫描和服务知识库，给agent设计详细的执行流程，来减少无用尝试次数。三是优化Check验证机制，将结果匹配域缩小到工具输出内容,并引入LLM自主判断是否成功。四是统一提示词格式约束，为不同Agent设定差异化的角色和权限，让agent专注于本状态任务，减少越权命令。五是实现上下文压缩，将上下文按照完整保留任务目标、摘要历史对话、截取最近两条工具输出的流程进行压缩。</p>
+<hr>
+<p><strong>第五页：改进二——工具扩展与容错</strong></p>
+<p>第二个改进围绕补充工具能力展开。在浏览器交互方面，本文在LangChain 的原生 PlayWright 工具包基础上新增三个工具，补足输入框填充和下拉框选择等缺失功能，让agent能够处理需要填写配置信息的漏洞场景。对于处理LLM输出的ReAct解析器，本文实现了容错机制，能够过滤思维链内容、将自然语言转化为正确ACTION指令。此外还增强了ReadHTML工具的PoC自动提取能力，使其从GitHub页面中精准提取Poc代码而非环境部署指令。</p>
+<hr>
+<p><strong>第六页：改进三——Web Console</strong></p>
+<p>改进三实现了Web界面，提供控制台、漏洞库、渗透测试面板、靶机管理、测试报告和系统设置六个模块，能够通过图形化界面来设定测试任务和管理系统配置，让AutoPT使用更加便捷。</p>
+<hr>
+<p><strong>第七页：实验与评估</strong></p>
+<p>实验设计上，我选取了与AutoPT原论文相同的20个CVE和3种大语言模型，形成60组，每组5次重复实验，共300组实验来验证优化效果。实验数据表明，总体成功率从24.67%提升至63.67%。GPT-4o-mini表现最好达到74%成功率，而弱模型GPT-3.5-turbo成功率从约7%跃升至54%，说明架构优化对弱模型能力有明显的提升。成本方面，以最优模型gpt-4o-mini为例，单次测试平均成本降低69%、耗时缩短42%，验证了流程优化能同时带来成功率和资源效率的改善。</p>
+<hr>
+<p><strong>第八页：改进效果评估</strong></p>
+<p>我们分别来看三个改进效果。对于PSM流程控制，状态细化和提前终止缩短了执行时间，让测试耗时下降；上下文压缩将单次测试平均Token消耗下降到11.3K，降低成本。工具扩展和补充让失败原因中工具执行失败率降低到10.1%，错误命令概率降至29.4%。Web控制台为300组实验提供了基础支撑。</p>
+<hr>
+<p><strong>第九页：总结与展望</strong></p>
+<p>总的来说，本文不更换更强模型，仅通过对PSM架构内的流程控制和工具能力做针对性改进，就能够提高成功率，同时降低成本和耗时。目前框架只覆盖web漏洞，未来可以引入精细化重试策略和DeepSeek等本地开源模型，并扩展漏洞类型。</p>
+<p>我的汇报到此结束，希望各位老师批评指正，谢谢！</p>
+
+            
+            
+        </body>
+        </html>
